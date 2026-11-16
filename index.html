@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>2 Year Anniversary - For Nivedita</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Caveat:wght@400;600;700&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --cosmic-dark: #09030e;
+            --cosmic-purple: #1e092b;
+            --nebula-magenta: #46144d;
+            --rose-gold: #f5b8c6;
+            --champagne-gold: #fde8b3;
+            --blush-pink: #ffd1dc;
+            --node-cyan: #a5ecff;
+            --node-blue: #3d8bff;
+            --shiny-gold: #ffeaa7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            background: #09030e;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Deep Cosmic Nebula Gradient Background */
+        .cosmic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(145, 45, 105, 0.44) 0%, rgba(70, 20, 85, 0.3) 32%, transparent 70%),
+                radial-gradient(circle at 15% 75%, rgba(65, 16, 90, 0.55) 0%, transparent 60%),
+                radial-gradient(circle at 85% 30%, rgba(105, 30, 95, 0.48) 0%, transparent 55%),
+                radial-gradient(circle at 50% 8%, rgba(50, 15, 75, 0.6) 0%, transparent 65%),
+                linear-gradient(180deg, #12061f 0%, #1a082c 30%, #290d3d 50%, #1a082e 75%, #0b0313 100%);
+            pointer-events: none;
+        }
+
+        /* Floating stardust clouds overlay */
+        .cosmic-nebula-clouds {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 220, 230, 0.8), rgba(0, 0, 0, 0)),
+                radial-gradient(1.5px 1.5px at 90px 40px, rgba(255, 245, 210, 0.9), rgba(0, 0, 0, 0)),
+                radial-gradient(2.5px 2.5px at 160px 120px, rgba(255, 200, 225, 0.7), rgba(0, 0, 0, 0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            opacity: 0.38;
+            pointer-events: none;
+        }
+
+        /* Three.js Canvas Container */
+        #webgl-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        /* Main UI Stage Layer */
+        .stage-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 18px 34px 28px 34px;
+            pointer-events: none;
+        }
+
+        /* ---------------- TOP NAVBAR (ALWAYS ONE LINE) ---------------- */
+        .top-navbar {
+            pointer-events: auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-top: 4px;
+            padding-bottom: 6px;
+        }
+
+        .nav-links {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(18px, 4vw, 55px);
+            list-style: none;
+            white-space: nowrap !important;
+        }
+
+        .nav-item {
+            position: relative;
+            white-space: nowrap !important;
+            flex-shrink: 0;
+        }
+
+        .nav-link {
+            font-family: 'Great Vibes', 'Dancing Script', cursive;
+            font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+            color: #ffffff;
+            text-decoration: none;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 0 25px rgba(245, 184, 198, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            white-space: nowrap !important;
+        }
+
+        .nav-link:hover {
+            color: #ffd8e2;
+            transform: scale(1.06);
+            text-shadow: 0 0 16px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 150, 180, 0.6);
+        }
+
+        .nav-link.active-home::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 5%;
+            width: 90%;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, #ffffff 40%, #ffffff 60%, transparent);
+            border-radius: 2px;
+            box-shadow: 0 0 8px #ffffff;
+        }
+
+        /* Ambient Audio Vibe Pill for vibe.mp3 */
+        .audio-pill {
+            position: absolute;
+            right: 0;
+            top: 4px;
+            pointer-events: auto;
+            background: rgba(45, 18, 55, 0.52);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(245, 184, 198, 0.38);
+            color: #ffd1dc;
+            padding: 8px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            white-space: nowrap;
+        }
+
+        .audio-pill:hover {
+            background: rgba(75, 25, 90, 0.7);
+            border-color: rgba(255, 209, 220, 0.75);
+            box-shadow: 0 0 18px rgba(245, 184, 198, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .sound-wave {
+            display: flex;
+            align-items: flex-end;
+            gap: 2.5px;
+            height: 12px;
+        }
+
+        .sound-bar {
+            width: 2.5px;
+            background: #ffd1dc;
+            border-radius: 2px;
+            height: 3px;
+            transition: height 0.2s ease;
+        }
+
+        .sound-wave.playing .sound-bar:nth-child(1) {
+            animation: wave 0.8s ease-in-out infinite 0.1s;
+        }
+
+        .sound-wave.playing .sound-bar:nth-child(2) {
+            animation: wave 0.8s ease-in-out infinite 0.3s;
+        }
+
+        .sound-wave.playing .sound-bar:nth-child(3) {
+            animation: wave 0.8s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 3px;
+            }
+
+            50% {
+                height: 12px;
+            }
+        }
+
+        /* ---------------- BIG 2 YEAR ANNIVERSARY HERO TITLE ---------------- */
+        .hero-title-section {
+            width: 100%;
+            text-align: center;
+            position: relative;
+            margin-top: 12px;
+            margin-bottom: -5px;
+            pointer-events: auto;
+        }
+
+        .hero-anniversary-title {
+            font-family: 'Playfair Display', 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6.2vw, 4.8rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, #fff1d8 25%, #fde8b3 50%, #f5b8c6 80%, #ffc8d5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 18px rgba(253, 232, 179, 0.45));
+            line-height: 1.15;
+            text-transform: capitalize;
+            transition: transform 0.4s ease;
+        }
+
+        .hero-anniversary-title:hover {
+            transform: scale(1.02);
+        }
+
+        .hero-subscript-title {
+            font-family: 'Great Vibes', 'Alex Brush', cursive;
+            font-size: clamp(2.2rem, 4.2vw, 3.4rem);
+            color: #ffd8e2;
+            text-shadow: 0 0 12px rgba(255, 216, 226, 0.8), 0 0 28px rgba(245, 184, 198, 0.55);
+            margin-top: -2px;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+
+        .title-sparkle-arc {
+            width: 240px;
+            height: 18px;
+            margin: 2px auto 0;
+            background: radial-gradient(ellipse at 50% -20%, rgba(253, 232, 179, 0.7) 0%, rgba(245, 184, 198, 0.4) 40%, transparent 75%);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ---------------- SHINY SPARKLES ---------------- */
+        .sparkle-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fff, 0 0 16px #fde8b3, 0 0 25px #ffffff;
+            animation: shinySparklePulse 2.2s infinite ease-in-out;
+        }
+
+        .shiny-sparkle-star {
+            position: absolute;
+            color: #ffffff;
+            font-size: 14px;
+            filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 14px #ffeaa7);
+            animation: shinyGlint 3s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 26;
+        }
+
+        @keyframes shinySparklePulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.7);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+                filter: drop-shadow(0 0 12px #ffffff) drop-shadow(0 0 20px #ffeaa7);
+            }
+        }
+
+        @keyframes shinyGlint {
+
+            0%,
+            100% {
+                transform: scale(0.8) rotate(0deg);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.35) rotate(90deg);
+                opacity: 1;
+                filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 22px #ffeaa7);
+            }
+        }
+
+        /* ---------------- MAIN STAGE: 3D HEART & CONSTELLATION ---------------- */
+        .main-stage-grid {
+            display: grid;
+            grid-template-columns: 1fr 390px;
+            align-items: center;
+            width: 100%;
+            max-width: 1360px;
+            margin: 0 auto;
+            min-height: 480px;
+            position: relative;
+        }
+
+        /* 3D Crystal Diamond Heart Interaction Zone */
+        .center-heart-anchor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 480px;
+            position: relative;
+            pointer-events: auto;
+            cursor: grab;
+            width: 100%;
+        }
+
+        .center-heart-anchor:active {
+            cursor: grabbing;
+        }
+
+        .heart-interaction-hint {
+            position: absolute;
+            bottom: 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.72rem;
+            color: rgba(255, 209, 220, 0.7);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            background: rgba(30, 10, 40, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 5px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 209, 220, 0.22);
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* ---------------- REFINED NON-OVERLAPPING MEMORY VAULT (NO BOX BACKGROUND) ---------------- */
+        .constellation-wrapper {
+            pointer-events: auto;
+            position: relative;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 390px;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+
+        /* Title floating directly in space with shiny sparkles */
+        .vault-title-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            width: 100%;
+            position: relative;
+        }
+
+        .constellation-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.8px;
+            text-shadow:
+                0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 25px rgba(165, 236, 255, 0.7),
+                0 0 40px rgba(255, 209, 220, 0.4);
+        }
+
+        .vault-shiny-icon {
+            color: #ffeaa7;
+            font-size: 1.1rem;
+            filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px #ffeaa7);
+            animation: shinyGlint 2.5s infinite ease-in-out;
+        }
+
+        /* Constellation SVG Canvas Container - Roomy, 380px wide to prevent any overlap */
+        .constellation-graph-container {
+            width: 380px;
+            height: 260px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .constellation-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .constellation-line {
+            stroke: url(#beamGradient);
+            stroke-width: 1.6;
+            filter: drop-shadow(0 0 4px rgba(165, 236, 255, 0.85)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+            animation: lineGlow 3.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes lineGlow {
+            0% {
+                stroke-opacity: 0.55;
+            }
+
+            100% {
+                stroke-opacity: 1;
+                filter: drop-shadow(0 0 6px rgba(185, 245, 255, 1)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
+            }
+        }
+
+        /* Shiny Non-Overlapping Constellation Node Badges */
+        .c-node {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 25;
+            background: linear-gradient(135deg, rgba(35, 48, 85, 0.72) 0%, rgba(20, 15, 38, 0.82) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1.3px solid rgba(185, 245, 255, 0.45);
+            box-shadow:
+                0 6px 20px rgba(0, 0, 0, 0.55),
+                0 0 14px rgba(165, 236, 255, 0.35),
+                inset 0 0 10px rgba(255, 255, 255, 0.25);
+            white-space: nowrap;
+        }
+
+        .c-node:hover {
+            transform: scale(1.12) translateY(-3px);
+            background: linear-gradient(135deg, rgba(50, 75, 130, 0.85) 0%, rgba(35, 20, 60, 0.92) 100%);
+            border-color: rgba(255, 255, 255, 0.95);
+            box-shadow:
+                0 0 25px rgba(165, 236, 255, 0.9),
+                0 0 45px rgba(255, 200, 225, 0.6),
+                inset 0 0 14px rgba(255, 255, 255, 0.5);
+        }
+
+        .c-node-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: radial-gradient(circle at 35% 35%, rgba(185, 245, 255, 0.95), rgba(45, 95, 175, 0.95));
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            box-shadow:
+                0 0 14px rgba(165, 236, 255, 0.8),
+                inset 0 0 8px rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .c-node:hover .c-node-icon {
+            box-shadow: 0 0 25px rgba(220, 250, 255, 1);
+            transform: rotate(8deg);
+        }
+
+        .c-node-circle {
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+        }
+
+        .c-node-label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            white-space: nowrap;
+        }
+
+        /* ---------------- PRECISE NON-OVERLAPPING NODE COORDINATES (5 UNIQUE NODES) ---------------- */
+        /* Node 1: The Proposal (Top-Left) */
+        .node-pos-1 {
+            top: 15px;
+            left: 25px;
+        }
+
+        /* Node 2: First Trip (Top-Right) */
+        .node-pos-2 {
+            top: 25px;
+            right: 20px;
+        }
+
+        /* Node 3: Heart Jewel Core (Center) */
+        .node-pos-core {
+            top: 105px;
+            left: 170px;
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        /* Node 4: The Vows (Bottom-Left) */
+        .node-pos-vows {
+            top: 185px;
+            left: 35px;
+        }
+
+        /* Node 5: 17.11.2024 (Bottom-Right) */
+        .node-pos-date {
+            top: 185px;
+            right: 25px;
+        }
+
+        /* ---------------- DUAL-PAGE VINTAGE PARCHMENT MANUSCRIPT ---------------- */
+        .parchment-book-wrapper {
+            position: fixed;
+            bottom: 18px;
+            right: 28px;
+            z-index: 30;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .parchment-book-wrapper:hover {
+            transform: scale(1.03) translateY(-4px);
+        }
+
+        .vintage-parchment {
+            width: 320px;
+            height: 185px;
+            background: linear-gradient(135deg, #eedfb8 0%, #faecd0 45%, #e9d5aa 100%);
+            border-radius: 6px;
+            box-shadow:
+                -8px 12px 28px rgba(0, 0, 0, 0.6),
+                inset 0 0 35px rgba(160, 115, 60, 0.4),
+                0 0 10px rgba(240, 210, 160, 0.3);
+            border: 1px solid rgba(165, 125, 75, 0.5);
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            transform: rotate(-1.5deg);
+        }
+
+        .parchment-spine {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(80, 50, 20, 0.22) 0%, rgba(40, 20, 5, 0.35) 50%, rgba(80, 50, 20, 0.22) 100%);
+            z-index: 2;
+        }
+
+        .vintage-parchment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(140, 95, 45, 0.12), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(140, 95, 45, 0.15), transparent 45%);
+            pointer-events: none;
+        }
+
+        .parchment-page {
+            width: 50%;
+            height: 100%;
+            padding: 12px 14px 10px 14px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            color: #3f2a1a;
+        }
+
+        .page-left {
+            padding-right: 12px;
+        }
+
+        .page-right {
+            padding-left: 12px;
+        }
+
+        .parchment-heading {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.15rem;
+            color: #4a2815;
+            margin-bottom: 4px;
+            line-height: 1.1;
+        }
+
+        .parchment-text {
+            font-family: 'Caveat', cursive;
+            font-size: 0.74rem;
+            line-height: 1.25;
+            color: #402715;
+            opacity: 0.95;
+            overflow: hidden;
+        }
+
+        .parchment-text p {
+            margin-bottom: 4px;
+        }
+
+        .curled-corner {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, transparent 50%, rgba(110, 75, 35, 0.3) 50%, #f4e8cc 60%);
+            box-shadow: 2px -2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        /* ---------------- CUSTOM INTERACTIVE MODALS ---------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 4, 16, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            pointer-events: auto;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background: rgba(30, 14, 40, 0.9);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(245, 184, 198, 0.35);
+            border-radius: 28px;
+            padding: 34px 38px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.75),
+                0 0 35px rgba(245, 184, 198, 0.2);
+            color: #ffd8e2;
+            transform: scale(0.92) translateY(20px);
+            transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .modal-overlay.open .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 150, 180, 0.35);
+            transform: rotate(90deg);
+        }
+
+        .modal-script-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.6rem;
+            color: #fde8b3;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(253, 232, 179, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .modal-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-style: italic;
+            text-align: center;
+            color: rgba(255, 209, 220, 0.85);
+            margin-bottom: 20px;
+        }
+
+        .modal-content-body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.94rem;
+            line-height: 1.7;
+            color: #ffe6ed;
+            font-weight: 300;
+        }
+
+        .modal-container::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .modal-container::-webkit-scrollbar-track {
+            background: rgba(20, 8, 30, 0.4);
+        }
+
+        .modal-container::-webkit-scrollbar-thumb {
+            background: rgba(245, 184, 198, 0.4);
+            border-radius: 10px;
+        }
+
+        /* Cursor Sparkle */
+        .cursor-trail {
+            position: fixed;
+            pointer-events: none;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffd1dc;
+            box-shadow: 0 0 10px #ffffff, 0 0 20px #ff9bb5;
+            z-index: 9999;
+            transition: transform 0.1s linear;
+        }
+
+        /* =========================================================================
+           MOBILE & PHONE RESPONSIVE STYLING (GUARANTEED ONE LINE FOR NAV)
+           ========================================================================= */
+        @media (max-width: 768px) {
+            .stage-container {
+                padding: 10px 14px 40px 14px;
+                min-height: auto;
+                justify-content: flex-start;
+                gap: 6px;
+            }
+
+            .top-navbar {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+            .nav-links {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                justify-content: center !important;
+                gap: 18px !important;
+                width: 100% !important;
+                white-space: nowrap !important;
+            }
+
+            .nav-link {
+                font-size: 1.55rem !important;
+                white-space: nowrap !important;
+            }
+
+            .audio-pill {
+                position: static;
+                padding: 6px 14px;
+                font-size: 0.72rem;
+                gap: 6px;
+            }
+
+            .hero-title-section {
+                margin-top: 6px;
+                margin-bottom: 0px;
+            }
+
+            .hero-anniversary-title {
+                font-size: clamp(1.95rem, 8vw, 2.9rem);
+                letter-spacing: 1.2px;
+                line-height: 1.1;
+            }
+
+            .hero-subscript-title {
+                font-size: clamp(1.8rem, 6.5vw, 2.4rem);
+                margin-top: 2px;
+            }
+
+            .title-sparkle-arc {
+                width: 180px;
+                height: 14px;
+            }
+
+            .main-stage-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                min-height: auto;
+                margin-top: -5px;
+            }
+
+            .center-heart-anchor {
+                height: 330px;
+            }
+
+            .heart-interaction-hint {
+                bottom: 12px;
+                font-size: 0.65rem;
+                padding: 4px 12px;
+            }
+
+            .constellation-wrapper {
+                margin-top: 10px;
+                max-width: 100%;
+            }
+
+            .constellation-graph-container {
+                width: 360px;
+                height: 250px;
+                transform: scale(0.95);
+                transform-origin: center;
+            }
+
+            .parchment-book-wrapper {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 25px auto 20px auto;
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .vintage-parchment {
+                width: 310px;
+                height: 185px;
+                transform: rotate(0deg);
+            }
+
+            .modal-container {
+                padding: 24px 20px;
+                max-width: 93vw;
+                border-radius: 24px;
+            }
+
+            .modal-script-title {
+                font-size: 2.15rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .nav-links {
+                gap: 12px !important;
+            }
+
+            .nav-link {
+                font-size: 1.38rem !important;
+            }
+
+            .audio-pill {
+                padding: 5px 11px;
+                font-size: 0.68rem;
+            }
+
+            .hero-anniversary-title {
+                font-size: 1.8rem;
+            }
+
+            .constellation-graph-container {
+                transform: scale(0.85);
+                transform-origin: center;
+            }
+
+            .vintage-parchment {
+                width: 290px;
+                height: 175px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Native Audio Elements for vibe.mp3 and poem.mp3 -->
+    <audio id="vibeAudio" src="Vibe.mp3" loop preload="auto"></audio>
+    <audio id="poemAudio" src="Poem.mp3" preload="auto"></audio>
+
+    <!-- Deep Cosmic Nebula Visual Layer -->
+    <div class="cosmic-background"></div>
+    <div class="cosmic-nebula-clouds"></div>
+
+    <!-- Three.js Canvas Container (3D Faceted Diamond Heart & Sakura Petals) -->
+    <div id="webgl-canvas-container"></div>
+
+    <!-- Main Front Stage UI Layer -->
+    <div class="stage-container">
+
+        <!-- Top Navigation (Home, The Poem, Love Note strictly in ONE line) -->
+        <header class="top-navbar">
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="openModal('homeModal')" class="nav-link active-home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="openModal('poemModal')" class="nav-link">The Poem</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="openModal('noteModal')" class="nav-link">Love Note</a>
+                </li>
+            </ul>
+
+            <!-- Ambient Music Audio Pill playing Vibe.mp3 -->
+            <button class="audio-pill" id="audioToggleBtn" onclick="toggleAudioVibe()" title="Toggle Vibe Music">
+                <div class="sound-wave" id="soundWave">
+                    <div class="sound-bar"></div>
+                    <div class="sound-bar"></div>
+                    <div class="sound-bar"></div>
+                </div>
+                <span id="audioBtnText">Play Vibe</span>
+            </button>
+        </header>
+
+        <!-- Big 2 Year Anniversary Title & For Nivedita -->
+        <div class="hero-title-section">
+            <h1 class="hero-anniversary-title">2 Year Anniversary</h1>
+            <h2 class="hero-subscript-title">For Nivedita</h2>
+            <div class="title-sparkle-arc">
+                <div class="sparkle-dot" style="left: 15%; animation-delay: 0.2s;"></div>
+                <div class="sparkle-dot" style="left: 35%; animation-delay: 0.7s;"></div>
+                <div class="sparkle-dot" style="left: 50%; animation-delay: 0.1s; width: 4.5px; height: 4.5px;"></div>
+                <div class="sparkle-dot" style="left: 65%; animation-delay: 1.1s;"></div>
+                <div class="sparkle-dot" style="left: 85%; animation-delay: 0.5s;"></div>
+            </div>
+        </div>
+
+        <!-- Main Stage Grid -->
+        <main class="main-stage-grid">
+
+            <!-- CENTER: 3D Crystal Diamond Heart Interaction Zone -->
+            <div class="center-heart-anchor" id="heartInteractiveZone" onclick="triggerHeartSparkleBurst()">
+                <!-- Hint fades out after first interaction -->
+                <div class="heart-interaction-hint" id="heartHint">
+                    <i class="fa-solid fa-hand-pointer" style="margin-right: 4px;"></i> Drag to rotate • Tap to pulse
+                </div>
+            </div>
+
+            <!-- RIGHT: SHINY NON-OVERLAPPING CONSTELLATION MEMORY VAULT (NO CARD BACKGROUND) -->
+            <div class="constellation-wrapper">
+                <!-- Glowing Title floating directly on stars -->
+                <div class="vault-title-wrap">
+                    <i class="fa-solid fa-sparkles vault-shiny-icon"></i>
+                    <h3 class="constellation-header">Memory Vault</h3>
+                    <i class="fa-solid fa-sparkles vault-shiny-icon" style="animation-delay: 1.5s;"></i>
+                </div>
+
+                <!-- Constellation Network (Clean, Roomy & Completely Non-Overlapping) -->
+                <div class="constellation-graph-container">
+                    <!-- SVG Luminous Connecting Lines -->
+                    <svg class="constellation-svg" viewBox="0 0 380 260">
+                        <defs>
+                            <linearGradient id="beamGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                                <stop offset="30%" stop-color="#a5ecff" stop-opacity="0.85" />
+                                <stop offset="70%" stop-color="#ffd1dc" stop-opacity="0.75" />
+                                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Exact center-to-center connecting lines for 5 unique nodes -->
+                        <line x1="90" y1="32" x2="305" y2="42" class="constellation-line"></line>
+                        <line x1="90" y1="32" x2="189" y2="124" class="constellation-line"></line>
+                        <line x1="90" y1="32" x2="92"  y2="202" class="constellation-line"></line>
+                        <line x1="305" y1="42" x2="189" y2="124" class="constellation-line"></line>
+                        <line x1="305" y1="42" x2="297" y2="202" class="constellation-line"></line>
+                        <line x1="189" y1="124" x2="92"  y2="202" class="constellation-line"></line>
+                        <line x1="189" y1="124" x2="297" y2="202" class="constellation-line"></line>
+                        <line x1="92"  y1="202" x2="297" y2="202" class="constellation-line"></line>
+                    </svg>
+
+                    <!-- Shiny Floating Stars scattered near constellation -->
+                    <span class="shiny-sparkle-star" style="top: 8px; right: 90px; font-size: 16px;">✦</span>
+                    <span class="shiny-sparkle-star"
+                        style="bottom: 45px; left: 145px; font-size: 18px; animation-delay: 1.2s; color: #ffeaa7;">✦</span>
+                    <span class="shiny-sparkle-star"
+                        style="top: 85px; right: 120px; font-size: 13px; animation-delay: 0.7s;">✦</span>
+
+                    <!-- Node 1: The Proposal (Top-Left) -->
+                    <div class="c-node node-pos-1" onclick="openMemoryModal('proposal')">
+                        <span class="c-node-label">The Proposal</span>
+                        <div class="c-node-icon"><i class="fa-solid fa-gem"></i></div>
+                    </div>
+
+                    <!-- Node 2: First Trip (Top-Right) -->
+                    <div class="c-node node-pos-2" onclick="openMemoryModal('firstTrip')">
+                        <div class="c-node-icon c-node-circle"><i class="fa-solid fa-paper-plane"></i></div>
+                        <span class="c-node-label">First Trip</span>
+                    </div>
+
+                    <!-- Node 3: Heart Jewel Core (Center) -->
+                    <div class="c-node node-pos-core" onclick="openMemoryModal('centerVault')" title="Memory Vault Core">
+                        <div class="c-node-icon c-node-circle" style="width: 32px; height: 32px;"><i
+                                class="fa-solid fa-heart" style="color: #ff9bb5;"></i></div>
+                    </div>
+
+                    <!-- Node 4: The Vows (Bottom-Left) -->
+                    <div class="c-node node-pos-vows" onclick="openMemoryModal('vows')">
+                        <div class="c-node-icon c-node-circle"><i class="fa-solid fa-feather-pointed"></i></div>
+                        <span class="c-node-label">The Vows</span>
+                    </div>
+
+                    <!-- Node 5: 17.11.2024 (Bottom-Right) -->
+                    <div class="c-node node-pos-date" onclick="openMemoryModal('anniversary')">
+                        <div class="c-node-icon"><i class="fa-solid fa-calendar-heart"></i></div>
+                        <span class="c-node-label">17.11.2024</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM RIGHT: Dual-Page Vintage Parchment Manuscript -->
+        <aside class="parchment-book-wrapper" onclick="openModal('poemModal')" title="Tap to read full poem & notes">
+            <div class="vintage-parchment">
+                <div class="parchment-spine"></div>
+                <div class="curled-corner"></div>
+
+                <!-- Left Page -->
+                <div class="parchment-page page-left">
+                    <h4 class="parchment-heading">Our Chronicle</h4>
+                    <div class="parchment-text">
+                        <p>730 Days of infinite love,<br>
+                            Two wonderful years of bliss,<br>
+                            Our love glows eternal,<br>
+                            The Poem cheers thus<br>
+                            Today and for eternity...</p>
+                        <p style="margin-top: 4px;"><strong>The Proposal:</strong><br>
+                            From that very sunset,<br>
+                            Our love will always flourish,<br>
+                            The most sacred journey.</p>
+                    </div>
+                </div>
+
+                <!-- Right Page -->
+                <div class="parchment-page page-right">
+                    <h4 class="parchment-heading">Memory Vault</h4>
+                    <div class="parchment-text">
+                        <p>I'm out here that our bond<br>
+                            In true form now burns,<br>
+                            In this journey to end shining<br>
+                            And rise and eclipse the night.</p>
+                        <p style="margin-top: 4px;">To the sound of your laughter,<br>
+                            The melody of your heart,<br>
+                            The starry twinkle in your eyes,<br>
+                            The love that will never part.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Home / Story Modal -->
+    <div id="homeModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'homeModal')">
+        <div class="modal-container">
+            <button class="modal-close-btn" onclick="closeModal('homeModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="modal-script-title">2 Year Anniversary</h2>
+            <div class="modal-subtitle">Dedicated with Infinite Love to Nivedita</div>
+            <div class="modal-content-body">
+                <p>Welcome to our little sanctuary written in the stars. Exactly 2 years ago, our universe expanded with
+                    warmth, gentleness, and an irreplaceable melody called <em>You</em>.</p>
+                <br>
+                <p>Every single day, hour, and moment by your side has been a treasure. You are the crystalline diamond
+                    at the center of my world—catching every ray of light and reflecting pure joy back into my soul.</p>
+                <br>
+                <p>Happy 2nd Anniversary, my dearest Nivedita! Here is to us, forever and always.</p>
+                <br>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button onclick="closeModal('homeModal'); openModal('poemModal');"
+                        style="background: linear-gradient(135deg, #f5b8c6, #ff7b9f); border: none; padding: 10px 24px; border-radius: 999px; color: #1e092b; font-weight: 600; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(245, 184, 198, 0.4);">
+                        Read Anniversary Poem <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Poem Modal (Full Parchment Reading) -->
+    <div id="poemModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'poemModal')">
+        <div class="modal-container"
+            style="background: linear-gradient(135deg, rgba(240, 225, 195, 0.96), rgba(250, 238, 215, 0.96)); color: #3b2514; border-color: #cbb085;">
+            <button class="modal-close-btn" style="background: rgba(80, 50, 20, 0.15); color: #3b2514;"
+                onclick="closeModal('poemModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="modal-script-title" style="color: #522710; text-shadow: none;">Do Saal Ka Safar</h2>
+            <div class="modal-subtitle" style="color: #7b4f2c; font-family: 'Poppins', sans-serif; margin-bottom: 6px;">
+                2 Year Anniversary Poem Dedicated to Nivedita</div>
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div
+                    style="display: inline-flex; align-items: center; gap: 8px; background: rgba(80, 50, 20, 0.1); border: 1px solid rgba(140, 100, 60, 0.35); padding: 5px 14px; border-radius: 999px; font-family: 'Poppins', sans-serif; font-size: 0.76rem; color: #522710;">
+                    <i class="fa-solid fa-volume-high" id="poemAudioIcon"></i>
+                    <span id="poemAudioStatus">Playing Poem Audio</span>
+                    <button onclick="togglePoemAudioManual()"
+                        style="background: none; border: none; cursor: pointer; color: #522710; font-size: 0.82rem; margin-left: 4px;"
+                        title="Pause/Resume Poem Audio">
+                        <i class="fa-solid fa-pause" id="poemAudioControlIcon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-content-body"
+                style="font-family: 'Playfair Display', serif; font-size: 1.08rem; font-style: italic; line-height: 1.9; text-align: center; color: #3b2514;">
+                <p>Do saal beet gaye, pata hi nahi chala,<br>
+                    Jaise andheri raaton mein koi chand khila.<br>
+                    Tere hone se meri har subah hai haseen,<br>
+                    Tere jaisa is duniya mein aur koi nahi.</p>
+                <br>
+                <p>Woh pehli mulaqaat, woh baatein hazaar,<br>
+                    Dil ke kone mein bas gaya tera pyaar.<br>
+                    Kabhi roothna tera, kabhi manana mera,<br>
+                    Is chote se safar mein bas gaya tera basera.</p>
+                <br>
+                <p>Haath mein haath lekar yunhi chalte rehna,<br>
+                    Bina kuch kahe sab kuch keh dena.<br>
+                    Khuda se bas yahi ek duaa maangte hain,<br>
+                    Har janam mein tujhko hi apna maante hain.</p>
+                <br>
+                <p style="font-weight: bold; color: #8c2e42; font-style: normal; font-size: 1.15rem;">Happy 2nd
+                    Anniversary, meri jaan, meri Nivedita! ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Love Note Modal (Updated with user's exact romantic letter) -->
+    <div id="noteModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'noteModal')">
+        <div class="modal-container" style="max-width: 620px; border-color: rgba(255, 185, 205, 0.5);">
+            <button class="modal-close-btn" onclick="closeModal('noteModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div style="text-align: center; margin-bottom: 8px;">
+                <span style="font-size: 2.4rem; color: #ff7b9f; filter: drop-shadow(0 0 10px rgba(255,123,159,0.7));"><i
+                        class="fa-solid fa-envelope-open-text"></i></span>
+            </div>
+            <h2 class="modal-script-title" style="font-size: 2.7rem; color: #fae1be;">Love Note</h2>
+            <div class="modal-subtitle" style="color: #ffd1dc; margin-bottom: 22px;">Written from the bottom of my heart
+                for Nivedita</div>
+            <div class="modal-content-body"
+                style="font-family: 'Playfair Display', serif; font-size: 1.05rem; line-height: 1.85; color: #fff3f6;">
+                <p style="font-weight: 600; font-size: 1.18rem; color: #fde8b3; margin-bottom: 14px;">Hey Nivedita,</p>
+
+                <p style="margin-bottom: 14px;">
+                    Pata hi nahi chala yeh 2 saal kaise nikal gaye. Aisa lagta hai jaise kal hi toh sab shuru hua tha.
+                </p>
+
+                <p style="margin-bottom: 14px;">
+                    Tere aane se meri life mein ek alag hi sukoon aa gaya hai. Choti choti baaton pe tera roothna, aur
+                    phir mera tujhe manana—yeh sab meri zindagi ka sabse favorite part ban gaya hai. Tere bina yeh safar
+                    adhoora lagta, aur tu saath hai toh har din ek celebration jaisa lagta hai.
+                </p>
+
+                <p style="margin-bottom: 14px;">
+                    Thank you meri life mein aane ke liye aur mujhe itna pyaar dene ke liye. Chahe kuch bhi ho, main
+                    hamesha tere paas hoon, waise hi jaise pehle din tha.
+                </p>
+
+                <p
+                    style="font-weight: 600; color: #ffccd8; font-size: 1.15rem; margin-top: 18px; text-shadow: 0 0 12px rgba(255, 150, 180, 0.6);">
+                    Happy 2nd Anniversary, meri jaan! I love you so much. ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Memory Node Preview Modal -->
+    <div id="memoryNodeModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'memoryNodeModal')">
+        <div class="modal-container" style="max-width: 480px;">
+            <button class="modal-close-btn" onclick="closeModal('memoryNodeModal')"><i
+                    class="fa-solid fa-xmark"></i></button>
+            <div id="memoryModalIcon"
+                style="text-align: center; font-size: 2.5rem; color: #a5ecff; margin-bottom: 10px;"></div>
+            <h2 class="modal-script-title" id="memoryModalTitle" style="font-size: 2.4rem;"></h2>
+            <div class="modal-subtitle" id="memoryModalDate"></div>
+            <div class="modal-content-body" id="memoryModalDesc" style="text-align: center; font-size: 0.95rem;"></div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        // ---------------- 1. AUDIO ELEMENTS & MODAL CONTROLS ----------------
+        const vibeAudio = document.getElementById('vibeAudio');
+        const poemAudio = document.getElementById('poemAudio');
+        let isAudioPlaying = false;
+        let wasVibePlayingBeforePoem = false;
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+            if (id === 'poemModal') {
+                startPoemAudio();
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            if (id === 'poemModal') {
+                stopPoemAudio();
+            }
+        }
+
+        function closeModalOnOutsideClick(event, id) {
+            if (event.target === document.getElementById(id)) {
+                closeModal(id);
+            }
+        }
+
+        function startPoemAudio() {
+            if (vibeAudio && !vibeAudio.paused) {
+                wasVibePlayingBeforePoem = true;
+                vibeAudio.pause();
+                document.getElementById('audioBtnText').innerText = "Play Vibe";
+                document.getElementById('soundWave').classList.remove('playing');
+            }
+            if (poemAudio) {
+                poemAudio.currentTime = 0;
+                poemAudio.play().then(() => {
+                    const icon = document.getElementById('poemAudioControlIcon');
+                    const status = document.getElementById('poemAudioStatus');
+                    if (icon) icon.className = "fa-solid fa-pause";
+                    if (status) status.innerText = "Playing Poem Audio";
+                }).catch((err) => {
+                    console.warn("Poem audio play attempt:", err);
+                    if (poemAudio.src.indexOf('Poem.mp3') !== -1) {
+                        poemAudio.src = 'poem.mp3';
+                        poemAudio.play().catch(e => console.error(e));
+                    }
+                });
+            }
+        }
+
+        function stopPoemAudio() {
+            if (poemAudio) {
+                poemAudio.pause();
+                poemAudio.currentTime = 0;
+            }
+            if (wasVibePlayingBeforePoem && vibeAudio) {
+                vibeAudio.play().then(() => {
+                    isAudioPlaying = true;
+                    document.getElementById('audioBtnText').innerText = "Playing Vibe";
+                    document.getElementById('soundWave').classList.add('playing');
+                }).catch(e => console.log(e));
+                wasVibePlayingBeforePoem = false;
+            }
+        }
+
+        function togglePoemAudioManual() {
+            const icon = document.getElementById('poemAudioControlIcon');
+            const status = document.getElementById('poemAudioStatus');
+            if (!poemAudio) return;
+            if (poemAudio.paused) {
+                poemAudio.play();
+                if (icon) icon.className = "fa-solid fa-pause";
+                if (status) status.innerText = "Playing Poem Audio";
+            } else {
+                poemAudio.pause();
+                if (icon) icon.className = "fa-solid fa-play";
+                if (status) status.innerText = "Poem Audio Paused";
+            }
+        }
+
+        if (poemAudio) {
+            poemAudio.addEventListener('ended', () => {
+                const icon = document.getElementById('poemAudioControlIcon');
+                const status = document.getElementById('poemAudioStatus');
+                if (icon) icon.className = "fa-solid fa-rotate-right";
+                if (status) status.innerText = "Replay Poem Audio";
+            });
+        }
+
+        const memoryData = {
+            proposal: {
+                icon: '<i class="fa-solid fa-gem"></i>',
+                title: 'The Proposal',
+                date: 'Ek Atoot Vaada',
+                desc: 'Jab samay tham gaya. Me tumhara ho gaya aur aap mere.'
+            },
+            firstTrip: {
+                icon: '<i class="fa-solid fa-paper-plane"></i>',
+                title: 'Our First Trip',
+                date: 'Dwarka',
+                desc: 'Bag baandhke gaye, radheshyaam ke darshan krne. Chalo!!!'
+            },
+            centerVault: {
+                icon: '<i class="fa-solid fa-heart"></i>',
+                title: 'Yaadon Ka Sansar',
+                date: '2 Jaadui Saal',
+                desc: 'Raato ki baatein, hasi, anmol pal, Pyari si muskaan, aur saccha pyaar'
+            },
+            anniversary: {
+                icon: '<i class="fa-solid fa-calendar-heart"></i>',
+                title: '17 November 2024',
+                date: 'Jaha sab shuru hua',
+                desc: 'Hamare 2 saal, kitne pyaare din aur saal.'
+            },
+            vows: {
+                icon: '<i class="fa-solid fa-feather-pointed"></i>',
+                title: 'Our Eternal Vows',
+                date: 'Me aur aap',
+                desc: 'Sath rehne ka, khush rehne ka vaada.'
+            }
+        };
+
+        function openMemoryModal(key) {
+            const data = memoryData[key] || memoryData.anniversary;
+            document.getElementById('memoryModalIcon').innerHTML = data.icon;
+            document.getElementById('memoryModalTitle').innerText = data.title;
+            document.getElementById('memoryModalDate').innerText = data.date;
+            document.getElementById('memoryModalDesc').innerText = data.desc;
+            openModal('memoryNodeModal');
+            playChime(660);
+        }
+
+        // ---------------- 2. MUSIC AUDIO ENGINE (VIBE.MP3) ----------------
+        function toggleAudioVibe() {
+            const btnText = document.getElementById('audioBtnText');
+            const wave = document.getElementById('soundWave');
+
+            if (!isAudioPlaying) {
+                vibeAudio.play().then(() => {
+                    isAudioPlaying = true;
+                    btnText.innerText = "Playing Vibe";
+                    wave.classList.add('playing');
+                }).catch((err) => {
+                    console.warn("Audio play error, attempting fallback:", err);
+                    if (vibeAudio.src.indexOf('Vibe.mp3') !== -1) {
+                        vibeAudio.src = 'vibe.mp3';
+                        vibeAudio.play().then(() => {
+                            isAudioPlaying = true;
+                            btnText.innerText = "Playing Vibe";
+                            wave.classList.add('playing');
+                        }).catch(e => console.error(e));
+                    }
+                });
+            } else {
+                vibeAudio.pause();
+                isAudioPlaying = false;
+                btnText.innerText = "Play Vibe";
+                wave.classList.remove('playing');
+            }
+        }
+
+        // Subtle audio chime for interactions
+        let audioCtx = null;
+        function playChime(freq = 523.25) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+            } catch (e) { }
+        }
+
+        // ---------------- 3. INTERACTIVE HEART BURST & CONFETTI ----------------
+        function triggerHeartSparkleBurst() {
+            playChime(783.99);
+            const hint = document.getElementById('heartHint');
+            if (hint) hint.style.opacity = '0';
+
+            if (crystalDiamondMesh) {
+                heartPulseVelocity = 0.22;
+            }
+
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 35,
+                    spread: 60,
+                    origin: { y: 0.52 },
+                    colors: ['#ffd1dc', '#fde8b3', '#ff8ca3', '#ffffff']
+                });
+            }
+        }
+
+        // ---------------- 4. CURSOR SPARKLE TRAIL ----------------
+        let lastCursorTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastCursorTime > 60) {
+                lastCursorTime = now;
+                const dot = document.createElement('div');
+                dot.className = 'cursor-trail';
+                dot.style.left = `${e.clientX}px`;
+                dot.style.top = `${e.clientY}px`;
+                document.body.appendChild(dot);
+
+                setTimeout(() => {
+                    dot.style.transform = `translate(${(Math.random() - 0.5) * 20}px, ${Math.random() * 25}px) scale(0)`;
+                    dot.style.opacity = '0';
+                    setTimeout(() => dot.remove(), 400);
+                }, 20);
+            }
+        });
+
+        // =========================================================================
+        // ---------------- 5. THREE.JS 3D SCENE: FACETED DIAMOND HEART & BLOSSOMS ---
+        // =========================================================================
+        let scene, camera, renderer;
+        let crystalDiamondMesh, innerGlowHeart, wireframeEdges;
+        let heartGroup, blossomsGroup, starField, stardustCurve;
+        let mouseX = 0, mouseY = 0;
+        let isDragging = false, prevMouseX = 0, prevMouseY = 0;
+        let targetRotX = 0, targetRotY = 0;
+        let heartPulseVelocity = 0, heartBaseScale = 1.0;
+        const petals = [];
+
+        function updateCameraForScreen() {
+            if (!camera) return;
+            if (window.innerWidth < 480) {
+                camera.position.set(0, 0, 19.5);
+                heartBaseScale = 0.88;
+            } else if (window.innerWidth < 768) {
+                camera.position.set(0, 0, 18);
+                heartBaseScale = 0.95;
+            } else {
+                camera.position.set(0, 0, 16);
+                heartBaseScale = 1.0;
+            }
+        }
+
+        function initThree() {
+            const container = document.getElementById('webgl-canvas-container');
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            updateCameraForScreen();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.35; // Enhanced shiny exposure
+            container.appendChild(renderer.domElement);
+
+            // Ambient & Shiny Specular Lights
+            const ambient = new THREE.AmbientLight(0xfff0f5, 1.35);
+            scene.add(ambient);
+
+            // Radiant Core Light
+            const innerLight = new THREE.PointLight(0xff4d88, 5.0, 22);
+            innerLight.position.set(0, 0, 0);
+            scene.add(innerLight);
+
+            // Brilliant Shiny Glint Lights (Bright White & Gold)
+            const glintLight1 = new THREE.PointLight(0xffffff, 4.2, 45);
+            glintLight1.position.set(8, 8, 12);
+            scene.add(glintLight1);
+
+            const glintLight2 = new THREE.PointLight(0xa5ecff, 3.5, 45);
+            glintLight2.position.set(-10, -6, 10);
+            scene.add(glintLight2);
+
+            const goldGlint = new THREE.PointLight(0xffeaa7, 3.0, 35);
+            goldGlint.position.set(0, -8, 8);
+            scene.add(goldGlint);
+
+            const rimLight = new THREE.DirectionalLight(0xffccd5, 2.0);
+            rimLight.position.set(0, 12, -8);
+            scene.add(rimLight);
+
+            heartGroup = new THREE.Group();
+            scene.add(heartGroup);
+
+            createFacetedDiamondHeart();
+            createBlossomsAndPetals();
+            createStarfieldAndBokeh();
+            createGoldenStardustArc();
+
+            window.addEventListener('resize', onResize);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mouseup', onMouseUp);
+
+            const heartZone = document.getElementById('heartInteractiveZone');
+            heartZone.addEventListener('touchstart', onTouchStart, { passive: true });
+            heartZone.addEventListener('touchmove', onTouchMove, { passive: true });
+            heartZone.addEventListener('touchend', onTouchEnd);
+        }
+
+        function createFacetedDiamondHeart() {
+            const N = 18;
+            const positions = [];
+            const indices = [];
+
+            function getHeartCoord(t, scale = 1.0, yShift = 0.2) {
+                const x = scale * (16 * Math.pow(Math.sin(t), 3)) * 0.13;
+                const y = scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 0.13 + yShift;
+                return { x, y };
+            }
+
+            positions.push(0, 0.2, 1.1);
+
+            for (let i = 0; i < N; i++) {
+                const t = (2 * Math.PI * i) / N;
+                const pt = getHeartCoord(t, 0.42);
+                positions.push(pt.x, pt.y, 0.95);
+            }
+
+            for (let i = 0; i < N; i++) {
+                const t = (2 * Math.PI * i) / N;
+                const pt = getHeartCoord(t, 0.78);
+                positions.push(pt.x, pt.y, 0.5);
+            }
+
+            for (let i = 0; i < N; i++) {
+                const t = (2 * Math.PI * i) / N;
+                const pt = getHeartCoord(t, 1.0);
+                positions.push(pt.x, pt.y, 0.0);
+            }
+
+            for (let i = 0; i < N; i++) {
+                const t = (2 * Math.PI * i) / N;
+                const pt = getHeartCoord(t, 0.75);
+                positions.push(pt.x, pt.y, -0.55);
+            }
+
+            const culetIndex = positions.length / 3;
+            positions.push(0, 0.0, -1.25);
+
+            for (let i = 0; i < N; i++) {
+                const curr = 1 + i;
+                const next = 1 + ((i + 1) % N);
+                indices.push(0, curr, next);
+            }
+
+            function bridgeRings(r1Start, r2Start) {
+                for (let i = 0; i < N; i++) {
+                    const c1 = r1Start + i;
+                    const n1 = r1Start + ((i + 1) % N);
+                    const c2 = r2Start + i;
+                    const n2 = r2Start + ((i + 1) % N);
+                    indices.push(c1, c2, n1);
+                    indices.push(n1, c2, n2);
+                }
+            }
+
+            bridgeRings(1, N + 1);
+            bridgeRings(N + 1, 2 * N + 1);
+            bridgeRings(2 * N + 1, 3 * N + 1);
+
+            const r4Start = 3 * N + 1;
+            for (let i = 0; i < N; i++) {
+                const curr = r4Start + i;
+                const next = r4Start + ((i + 1) % N);
+                indices.push(culetIndex, next, curr);
+            }
+
+            const rawGeo = new THREE.BufferGeometry();
+            rawGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            rawGeo.setIndex(indices);
+
+            const diamondGeo = rawGeo.toNonIndexed();
+            diamondGeo.computeVertexNormals();
+
+            const diamondMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffdbe6,
+                emissive: 0x5a1030,
+                emissiveIntensity: 0.5,
+                roughness: 0.03, // Ultra shiny crystal facets
+                metalness: 0.14,
+                transmission: 0.92,
+                ior: 2.42,
+                reflectivity: 0.98,
+                thickness: 2.2,
+                transparent: true,
+                opacity: 0.95,
+                flatShading: true,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.02
+            });
+
+            crystalDiamondMesh = new THREE.Mesh(diamondGeo, diamondMat);
+            crystalDiamondMesh.scale.set(1.4, 1.4, 1.4);
+            heartGroup.add(crystalDiamondMesh);
+
+            const edgesGeo = new THREE.EdgesGeometry(diamondGeo, 14);
+            const edgesMat = new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.55,
+                blending: THREE.AdditiveBlending
+            });
+            wireframeEdges = new THREE.LineSegments(edgesGeo, edgesMat);
+            crystalDiamondMesh.add(wireframeEdges);
+
+            const innerShape = new THREE.Shape();
+            const x = 0, y = 0;
+            innerShape.moveTo(x + 2.5, y + 2.5);
+            innerShape.bezierCurveTo(x + 2.5, y + 2.5, x + 2, y, x, y);
+            innerShape.bezierCurveTo(x - 3, y, x - 3, y + 3.5, x - 3, y + 3.5);
+            innerShape.bezierCurveTo(x - 3, y + 5.5, x - 1.5, y + 7.7, x + 2.5, y + 9.5);
+            innerShape.bezierCurveTo(x + 6.5, y + 7.7, x + 8, y + 5.5, x + 8, y + 3.5);
+            innerShape.bezierCurveTo(x + 8, y + 3.5, x + 8, y, x + 5, y);
+            innerShape.bezierCurveTo(x + 3, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5);
+
+            const extrudeOpts = {
+                depth: 1.2,
+                bevelEnabled: true,
+                bevelSegments: 4,
+                steps: 1,
+                bevelSize: 0.6,
+                bevelThickness: 0.6
+            };
+            const innerGeo = new THREE.ExtrudeGeometry(innerShape, extrudeOpts);
+            innerGeo.center();
+
+            const innerMat = new THREE.MeshStandardMaterial({
+                color: 0xff3b6f,
+                emissive: 0xff255d,
+                emissiveIntensity: 1.7,
+                roughness: 0.25,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.88
+            });
+
+            innerGlowHeart = new THREE.Mesh(innerGeo, innerMat);
+            innerGlowHeart.scale.set(0.18, 0.18, 0.18);
+            innerGlowHeart.rotation.z = Math.PI;
+            crystalDiamondMesh.add(innerGlowHeart);
+        }
+
+        function createBlossomsAndPetals() {
+            blossomsGroup = new THREE.Group();
+            scene.add(blossomsGroup);
+
+            const petalShape = new THREE.Shape();
+            petalShape.moveTo(0, 0);
+            petalShape.bezierCurveTo(0.2, 0.3, 0.35, 0.7, 0.18, 1.1);
+            petalShape.lineTo(0.08, 1.05);
+            petalShape.lineTo(0, 1.15);
+            petalShape.lineTo(-0.08, 1.05);
+            petalShape.bezierCurveTo(-0.35, 0.7, -0.2, 0.3, 0, 0);
+
+            const petalGeo = new THREE.ShapeGeometry(petalShape);
+            petalGeo.center();
+
+            const petalMat = new THREE.MeshStandardMaterial({
+                color: 0xffc2d1,
+                emissive: 0xff8ca3,
+                emissiveIntensity: 0.35,
+                roughness: 0.45,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.95
+            });
+
+            function createCherryBlossomFlower() {
+                const flower = new THREE.Group();
+                for (let i = 0; i < 5; i++) {
+                    const petal = new THREE.Mesh(petalGeo, petalMat);
+                    petal.rotation.z = (i * 2 * Math.PI) / 5;
+                    petal.position.x = Math.sin((i * 2 * Math.PI) / 5) * 0.35;
+                    petal.position.y = Math.cos((i * 2 * Math.PI) / 5) * 0.35;
+                    petal.scale.set(0.65, 0.65, 0.65);
+                    flower.add(petal);
+                }
+                const stamenGeo = new THREE.CircleGeometry(0.14, 12);
+                const stamenMat = new THREE.MeshBasicMaterial({ color: 0xffea9f });
+                const stamen = new THREE.Mesh(stamenGeo, stamenMat);
+                stamen.position.z = 0.02;
+                flower.add(stamen);
+                return flower;
+            }
+
+            const flowerPositions = [
+                { x: 2.8, y: 2.2, z: 1.5, scale: 0.9 },
+                { x: -2.6, y: 2.1, z: 1.2, scale: 0.8 },
+                { x: -2.3, y: -1.8, z: 1.8, scale: 0.85 },
+                { x: 3.2, y: -0.6, z: 0.8, scale: 0.75 },
+                { x: 1.8, y: -2.5, z: 1.4, scale: 0.8 }
+            ];
+
+            flowerPositions.forEach((pos) => {
+                const fl = createCherryBlossomFlower();
+                fl.position.set(pos.x, pos.y, pos.z);
+                fl.scale.set(pos.scale, pos.scale, pos.scale);
+                fl.userData = {
+                    baseX: pos.x,
+                    baseY: pos.y,
+                    speed: 0.0015 + Math.random() * 0.001,
+                    rotSpeed: 0.004 + Math.random() * 0.004
+                };
+                blossomsGroup.add(fl);
+                petals.push(fl);
+            });
+
+            for (let i = 0; i < 22; i++) {
+                const loosePetal = new THREE.Mesh(petalGeo, petalMat);
+                const theta = Math.random() * Math.PI * 2;
+                const radius = 2.0 + Math.random() * 4.5;
+                loosePetal.position.set(
+                    Math.cos(theta) * radius,
+                    Math.sin(theta) * radius + (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 4
+                );
+                const s = 0.35 + Math.random() * 0.4;
+                loosePetal.scale.set(s, s, s);
+                loosePetal.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                loosePetal.userData = {
+                    radius: radius,
+                    angle: theta,
+                    angularSpeed: (0.003 + Math.random() * 0.004) * (Math.random() > 0.5 ? 1 : -1),
+                    ySpeed: 0.004 + Math.random() * 0.008,
+                    rotSpeedX: 0.01 + Math.random() * 0.02,
+                    rotSpeedY: 0.01 + Math.random() * 0.02
+                };
+                blossomsGroup.add(loosePetal);
+                petals.push(loosePetal);
+            }
+        }
+
+        function createGoldenStardustArc() {
+            const curvePoints = [];
+            for (let i = 0; i <= 30; i++) {
+                const u = i / 30;
+                const t = u * Math.PI * 0.8;
+                const x = -1.2 + u * 3.2;
+                const y = -2.2 - Math.sin(t) * 1.0 + (u * 0.4);
+                const z = 1.0 - u * 0.5;
+                curvePoints.push(new THREE.Vector3(x, y, z));
+            }
+
+            const curve = new THREE.CatmullRomCurve3(curvePoints);
+            const tubeGeo = new THREE.TubeGeometry(curve, 40, 0.03, 8, false);
+            const tubeMat = new THREE.MeshBasicMaterial({
+                color: 0xfde8b3,
+                transparent: true,
+                opacity: 0.65
+            });
+            stardustCurve = new THREE.Mesh(tubeGeo, tubeMat);
+            scene.add(stardustCurve);
+
+            const starShape = new THREE.Shape();
+            const s = 0.32;
+            starShape.moveTo(0, s);
+            starShape.lineTo(s * 0.18, s * 0.18);
+            starShape.lineTo(s, 0);
+            starShape.lineTo(s * 0.18, -s * 0.18);
+            starShape.lineTo(0, -s);
+            starShape.lineTo(-s * 0.18, -s * 0.18);
+            starShape.lineTo(-s, 0);
+            starShape.lineTo(-s * 0.18, s * 0.18);
+            starShape.closePath();
+
+            const starGeo = new THREE.ShapeGeometry(starShape);
+            const starMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                side: THREE.DoubleSide
+            });
+            const sparkleStarMesh = new THREE.Mesh(starGeo, starMat);
+            sparkleStarMesh.position.copy(curvePoints[curvePoints.length - 1]);
+            sparkleStarMesh.userData = { isSparkleStar: true };
+            scene.add(sparkleStarMesh);
+            petals.push(sparkleStarMesh);
+        }
+
+        function createStarfieldAndBokeh() {
+            const starCount = 700;
+            const starGeo = new THREE.BufferGeometry();
+            const starPositions = new Float32Array(starCount * 3);
+            const starColors = new Float32Array(starCount * 3);
+
+            for (let i = 0; i < starCount * 3; i += 3) {
+                starPositions[i] = (Math.random() - 0.5) * 50;
+                starPositions[i + 1] = (Math.random() - 0.5) * 40;
+                starPositions[i + 2] = -15 + (Math.random() - 0.5) * 30;
+
+                const r = Math.random();
+                if (r > 0.6) {
+                    starColors[i] = 1.0; starColors[i + 1] = 0.94; starColors[i + 2] = 0.75;
+                } else if (r > 0.3) {
+                    starColors[i] = 1.0; starColors[i + 1] = 0.85; starColors[i + 2] = 0.9;
+                } else {
+                    starColors[i] = 1.0; starColors[i + 1] = 1.0; starColors[i + 2] = 1.0;
+                }
+            }
+
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+            starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+            const starMat = new THREE.PointsMaterial({
+                size: 0.26, // Slightly bigger, shinier stars
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending
+            });
+
+            starField = new THREE.Points(starGeo, starMat);
+            scene.add(starField);
+        }
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            updateCameraForScreen();
+        }
+
+        function onMouseMove(e) {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+
+            if (isDragging) {
+                const deltaX = e.clientX - prevMouseX;
+                const deltaY = e.clientY - prevMouseY;
+                targetRotY += deltaX * 0.008;
+                targetRotX += deltaY * 0.008;
+                prevMouseX = e.clientX;
+                prevMouseY = e.clientY;
+            }
+        }
+
+        function onMouseDown(e) {
+            if (Math.abs(e.clientX - window.innerWidth / 2) < 250 && Math.abs(e.clientY - window.innerHeight / 2) < 250) {
+                isDragging = true;
+                prevMouseX = e.clientX;
+                prevMouseY = e.clientY;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function onTouchStart(e) {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                prevMouseX = e.touches[0].clientX;
+                prevMouseY = e.touches[0].clientY;
+            }
+        }
+
+        function onTouchMove(e) {
+            if (isDragging && e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - prevMouseX;
+                const deltaY = e.touches[0].clientY - prevMouseY;
+                targetRotY += deltaX * 0.009;
+                targetRotX += deltaY * 0.009;
+                prevMouseX = e.touches[0].clientX;
+                prevMouseY = e.touches[0].clientY;
+            }
+        }
+
+        function onTouchEnd() {
+            isDragging = false;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = performance.now() * 0.001;
+
+            const heartbeat = Math.sin(time * 3.0) * 0.035;
+            heartPulseVelocity *= 0.92;
+            const currentScale = (heartBaseScale + heartbeat + heartPulseVelocity) * 1.4;
+
+            if (crystalDiamondMesh) {
+                crystalDiamondMesh.scale.set(currentScale, currentScale, currentScale);
+
+                if (!isDragging) {
+                    targetRotY = mouseX * 0.8 + Math.sin(time * 0.5) * 0.12;
+                    targetRotX = mouseY * 0.6 + Math.cos(time * 0.4) * 0.08;
+                }
+
+                heartGroup.rotation.y += (targetRotY - heartGroup.rotation.y) * 0.06;
+                heartGroup.rotation.x += (targetRotX - heartGroup.rotation.x) * 0.06;
+
+                heartGroup.position.y = Math.sin(time * 1.5) * 0.15;
+            }
+
+            if (innerGlowHeart) {
+                innerGlowHeart.material.emissiveIntensity = 1.4 + Math.sin(time * 4.0) * 0.5;
+            }
+
+            petals.forEach((p) => {
+                if (p.userData.isSparkleStar) {
+                    p.rotation.z += 0.02;
+                    const ss = 1.0 + Math.sin(time * 5.0) * 0.25;
+                    p.scale.set(ss, ss, ss);
+                } else if (p.userData.angularSpeed) {
+                    p.userData.angle += p.userData.angularSpeed;
+                    p.position.x = Math.cos(p.userData.angle) * p.userData.radius;
+                    p.position.y -= p.userData.ySpeed;
+                    if (p.position.y < -5) p.position.y = 5;
+                    p.rotation.x += p.userData.rotSpeedX;
+                    p.rotation.y += p.userData.rotSpeedY;
+                } else if (p.userData.baseX !== undefined) {
+                    p.position.y = p.userData.baseY + Math.sin(time * 2.0 + p.userData.baseX) * 0.12;
+                    p.rotation.z += p.userData.rotSpeed;
+                }
+            });
+
+            if (starField) {
+                starField.rotation.y = time * 0.015;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initThree();
+            animate();
+        });
+    </script>
+</body>
+
+</html>
